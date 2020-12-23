@@ -14,3 +14,17 @@ else if (match($0, /^(# at) /) && flag==1 && s_count>0) {print " Query Type : "s
 else if (match($0, /^(COMMIT)/)) {print "[Transaction total : " count " Insert(s) : " insert_count " Update(s) : " update_count " Delete(s) : " \
 delete_count "] \n+----------------------+----------------------+----------------------+----------------------+"; \
 count=0;insert_count=0;update_count=0; delete_count=0;s_type=""; s_count=0; flag=0} } '
+
+# ./summarize_binlogs.sh
+Timestamp : #150116 13:41:09 Table : `sakila`.`city` Query Type : UPDATE 1 row(s) affected
+[Transaction total : 1 Insert(s) : 0 Update(s) : 1 Delete(s) : 0]
+
+./summarize_binlogs.sh | grep Table |cut -d':' -f5| cut -d' ' -f2 | sort | uniq -c | sort -nr
+
+./summarize_binlogs.sh | grep -i '`sakila`.`country`' | awk '{print $7 " " $11}' | sort -k1,2 | uniq -c
+
+./summarize_binlogs.sh | grep Table | sort -nr -k 12 | head -n 3
+
+./summarize_binlogs.sh | grep -E 'DELETE' | awk '{if($12>1000) print $0}'
+
+./summarize_binlogs.sh | grep -E 'Table' | awk '{if($12>1000) print $0}'
